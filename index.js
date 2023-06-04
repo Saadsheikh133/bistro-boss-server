@@ -59,7 +59,19 @@ async function run() {
       res.send(token);
     });
 
-    app.get("/users", async (req, res) => {
+    const verifyAdmin = async(req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email }
+      const user = await userCollections.findOne(query)
+      if (user?.role !== 'admin') {
+        return res
+          .status(403)
+          .send({ error: true, message: "forbidden access!" });
+      }
+      next()
+    }
+
+    app.get("/users",verifyJWT, verifyAdmin, async (req, res) => {
       const result = await userCollections.find().toArray();
       res.send(result);
     });
