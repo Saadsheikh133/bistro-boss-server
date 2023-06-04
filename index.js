@@ -89,7 +89,6 @@ async function run() {
 
     app.patch("/users/admin/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
@@ -102,7 +101,6 @@ async function run() {
 
     app.get('/users/admin/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
-      console.log(email)
       if (req.decoded.email !== email) {
         res.send({admin: false})
       }
@@ -118,6 +116,12 @@ async function run() {
       const result = await menuCollections.find().toArray();
       res.send(result);
     });
+
+    app.post('/menu', async (req, res) => {
+      const newItem = req.body;
+      const result = await menuCollections.insertOne(newItem);
+      res.send(result)
+    })
     // review related apis
     app.get("/reviews", async (req, res) => {
       const result = await reviewCollections.find().toArray();
